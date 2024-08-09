@@ -42,12 +42,14 @@ import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
 import org.eclipse.daanse.jdbc.db.api.schema.ColumnMetaData;
 import org.eclipse.daanse.jdbc.db.api.schema.ColumnReference;
 import org.eclipse.daanse.jdbc.db.api.schema.SchemaReference;
+import org.eclipse.daanse.jdbc.db.api.schema.TableDefinition;
 import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
 import org.eclipse.daanse.jdbc.db.api.sql.InsertSqlStatement;
 import org.eclipse.daanse.jdbc.db.record.schema.ColumnDefinitionR;
 import org.eclipse.daanse.jdbc.db.record.schema.ColumnMetaDataR;
 import org.eclipse.daanse.jdbc.db.record.schema.ColumnReferenceR;
 import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
+import org.eclipse.daanse.jdbc.db.record.schema.TableDefinitionR;
 import org.eclipse.daanse.jdbc.db.record.schema.TableReferenceR;
 import org.eclipse.daanse.jdbc.db.record.sql.CreateContainerSqlStatementR;
 import org.eclipse.daanse.jdbc.db.record.sql.CreateSchemaSqlStatementR;
@@ -145,8 +147,9 @@ public class CsvDataLoader implements FileSystemWatcherListener {
             }
         });
 
-        TableReference table = new TableReferenceR(schema, fileName, "TABLE");
-        dropTable(connection, table);
+        TableReference tableRef = new TableReferenceR(schema, fileName, "TABLE");
+        TableDefinition tableDefinition=new TableDefinitionR(tableRef);
+        dropTable(connection, tableRef);
 
         if (!path.toFile().exists()) {
 
@@ -166,8 +169,8 @@ public class CsvDataLoader implements FileSystemWatcherListener {
             NamedCsvRecord types = it.next();
             List<ColumnDefinition> headersTypeList = getHeadersTypeList(types);
             if (it.hasNext()) {
-                createTable(connection, headersTypeList, table);
-                insertTable(connection, it, headersTypeList, table);
+                createTable(connection, headersTypeList, tableDefinition);
+                insertTable(connection, it, headersTypeList, tableRef);
             }
 
         } catch (IOException e) {
@@ -204,7 +207,7 @@ public class CsvDataLoader implements FileSystemWatcherListener {
         }
     }
 
-    public void createTable(Connection connection, List<ColumnDefinition> headersTypeList, TableReference table)
+    public void createTable(Connection connection, List<ColumnDefinition> headersTypeList, TableDefinition table)
             throws SQLException {
         try (Statement stmt = connection.createStatement();) {
 
@@ -279,7 +282,7 @@ public class CsvDataLoader implements FileSystemWatcherListener {
     private void setPrepareStatement(PreparedStatement ps, int index, ColumnDefinition columnDefinition, String field)
             throws SQLException {
 
-        ColumnMetaData type = columnDefinition.columnType();
+        ColumnMetaData type = columnDefinition.columnMetaData();
 
         if (field == null || field.equals(config.nullValue())) {
             ps.setObject(index, null);
