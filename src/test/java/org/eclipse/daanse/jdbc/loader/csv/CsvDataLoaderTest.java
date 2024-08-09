@@ -34,8 +34,8 @@ import javax.sql.DataSource;
 
 import org.eclipse.daanse.io.fs.watcher.api.FileSystemWatcherWhiteboardConstants;
 import org.eclipse.daanse.jdbc.db.api.DatabaseService;
-import org.eclipse.daanse.jdbc.db.api.meta.TableDefinition;
 import org.eclipse.daanse.jdbc.db.api.schema.ColumnDefinition;
+import org.eclipse.daanse.jdbc.db.api.schema.TableDefinition;
 import org.eclipse.daanse.jdbc.db.api.schema.TableReference;
 import org.eclipse.daanse.jdbc.db.record.schema.SchemaReferenceR;
 import org.eclipse.daanse.jdbc.db.record.schema.TableReferenceR;
